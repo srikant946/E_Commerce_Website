@@ -1,0 +1,236 @@
+{% extends 'shop/basic2.html' %}                        <!-- Extending the file which consists of the basic templates i.e navbar/JSS etc -->
+
+{% block title %} Title of Checkout {% endblock %} 
+
+{% block body %}
+
+<div class="container">
+  <!-- Margin from all sides provided using my-4 -->
+   <div class="col my-4">
+   <h2>Step 1 - My Shopping Cart Express Checkout...Review Your Cart Items </h2>
+    <div class="my-4">
+      <!-- A list-group created and referenced using id as 'items' -->
+      <ul class="list-group" id="items">
+      </ul>
+      <!-- BreadCrumb code to display the Total PRice of the products currently present in the cart -->
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mt-3">
+          <li class="breadcrumb-item active" aria-current="page">Your Cart total is <b>Rs.<span id="totalPrice"></span></b>  Enter Your details below and place your order</li>
+        </ol>
+      </nav>
+    </div>
+   </div>
+
+<div class="col my-4">
+<h2>Step 2 -- Enter Address and other Details</h2>
+<form action="/shop/checkout/" method="post"> {% csrf_token %}
+  <!-- 'itemsJson' a hidden field created in order to address each order item uniquely-->
+  <input type="hidden" name="itemsJson" id="itemsJson">
+
+  <!-- Hidden field created for passing amount to the braedcrumb while displaying the amount of the final products present in the cart -->
+  <input type="hidden" name="amount" id="amount">
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputname">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required=True>
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputemail">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required=True>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputAddress">Address</label>
+      <input type="text" class="form-control" id="address1" name="address1" placeholder="1234 Main St" required=True>
+      </div>
+      <div class="form-group">
+      <label for="inputAddress2">Address Line 2</label>
+      <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, studio, or floor" required=True>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputCity">City</label>
+        <input type="text" class="form-control" id="city" name="city" required=True>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="inputState">State</label>
+        <input type="text" class="form-control" id="state" name="state" required=True>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputZip">Zip</label>
+        <input type="text" class="form-control" id="zip_code" name="zip_code" required=True>
+      </div>
+      <div class="form-group">
+        <label for="inputphone">Contact Number</label>
+        <input type="tel" class="form-control" id="phone" name="phone" required=True>
+      </div>
+    </div>
+     <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
+
+</div>
+</div>
+
+{% endblock %} 
+
+{% block js %}
+<script>
+// Check if cart exists or not
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else 
+{
+    // Fetch the data present in the cart
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+console.log(cart);
+// Initially declare 'sum' as 0.
+// Initially 'totalPrice' is also Declared as 0
+var sum = 0;
+var totalPrice = 0;
+
+if ($.isEmptyObject(cart)) {
+    //If cart is kept empty
+    mystr = ` <p> Your cart is empty, please add some items to your cart before checking out! </p> `
+    $('#items').append(mystr);           // '#items' is used to refer to the list-group since the id of list-group is 'items'
+} 
+else 
+{
+    for (item in cart) 
+    {
+        //name[1] and qty[0] because both are stored in an array together.
+        let name = cart[item][1];
+        let qty = cart[item][0];
+        let itemPrice = cart[item][2];       // 'itemPrice' variable defined here which stores the value of an individual product
+        sum = sum + qty;                     // increment 'sum' value based on the quantity of products
+        
+        // Calculation of 'totalPrice' takes place here 
+        totalPrice = totalPrice + qty*itemPrice;
+        // Used to display 'name' and 'quantity' of products in 'list with badge' form.
+        mystr = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${qty}</span>
+                </li> `
+        $('#items').append(mystr);
+    }
+}
+// Total elements present in the cart is displayed on the 'Cart' button using this line of code.
+document.getElementById('cart').innerHTML = sum;
+// Total Price gets displayed in the innerHTML of 'totalPrice' variable.
+document.getElementById('totalPrice').innerHTML = totalPrice;
+
+$('#itemsJson').val(JSON.stringify(cart));    // To maintain the JSON item count even after refreshing the page.
+{% if thank %}                                // 'thank' variable referenced here from 'views.py' file which was declared in 'checkout' function.
+// The 'id' passed here is fetched from 'views.py' file from the function 'checkout'
+alert('Thanks for ordering with us..Your order Id is {{id}}. Use it to track your order using our order tracker');
+localStorage.clear();                         // Once customer finishes ordering the cart is cleared
+document.location = "/shop";                  // The customer is again redirected back to the home page.
+{% endif %}
+
+$('#amount').val($('#totalPrice').html());    // 'amount' stores the 'totalPrrice' html Value within it and that is displayed in the breadcrumb
+
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script>
+    // Find out the Cart Items from localStorage
+    if(localStorage.getItem('cart') == null)
+    {
+    var cart = {};
+    }
+    else
+    {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    }
+
+var sum = 0;
+if ($.isEmptyObject(cart))
+{
+  mystr = `<p> Your cart is empty, please add some items before checking out </p>`
+  $('#items').append(mystr);
+}
+else
+{
+for (item in cart)
+{
+      name = cart[item][1];
+      qty  = cart[item][0];
+      sum = sum + qty;
+      mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${qty}</span>
+                </li>`
+      $('#items').append(mystr);
+}
+}
+
+document.getElementById('cart').innerHTML = sum;
+</script> -->
+
+
+

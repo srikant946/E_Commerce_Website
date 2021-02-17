@@ -1,0 +1,157 @@
+{% extends 'shop/basic2.html' %}
+{% block title%} My Shopping Cart Tracker{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col my-4">
+        <h2>Enter your Order Id and Email address to track your order</h2>
+        <form method="post" action="#" id="trackerForm"> {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputname">Order Id</label>
+                    <!-- 'id' and 'name' assigned to the Form field so that validation Process can be carried out in 'tracker' function in 'views.py' file -->
+                    <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order Id" required=true>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail4">Email</label>
+                    <!-- 'id' and 'name' assigned to the Form field so that validation Process can be carried out in 'tracker' function in 'views.py' file -->
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required=true>
+                </div>
+                <button type="submit" class="btn btn-primary">Track Order</button>
+            </div>
+    </div>
+    <div class="col my-4">
+        <h2>Your Order Status</h2>
+        <div class="my-4">
+            <ul class="list-group" id="items">
+            	Enter your order Id and Email and click Track Order to find details about your order!
+            </ul>
+        </div>
+    </div>
+
+    <!-- Creating a List-Group for Displaying Order Details -->
+    <div class="col my-4">
+      <h2>Your Order Details</h2>
+      <div class="my-4">
+          <ul class="list-group" id="itemdetails">
+          </ul>
+      </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$('#trackerForm').submit(function(event) 
+{
+    $('#items').empty();
+    var formData = 
+    {
+        'orderId': $('input[name=orderId]').val(),                                // We accept the value of orderid on the basis of 'id' of form field
+        'email': $('input[name=email]').val(),                                    // We accept the value of email on the basis of 'id' of email
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()         // We accept the 'csrf_token' value for maintaining security
+    };
+    $.ajax({
+            type: 'POST',                                                         // Method of receiving data is said to be POST
+            url: '/shop/tracker/',                                                // Form action is set to /shop/tracker/
+            data: formData,                                                       // 'data' variable is passed the values attained by the varaible defined above i.e 'formData'
+            encode: true                                                          // 'encode' varaible is set to true.
+        })
+        .done(function(data)                                                      // 'done' function is written which executes once the form activity is completed
+        { 
+            $('#itemdetails').empty();                             // Added so as to prevent Details from being loaded repeatedly on Clicking of the Button Several times                       
+            console.log(data)
+            updates = JSON.parse(data);
+            data = JSON.parse(data);
+           
+            if (data['status'] == 'success') 
+            {
+                updates = data['updates'];                 // Only when Once data is received From the DB store it is stored in a variable called 'updates'..it works only when succesfully data has been receuved from the DB... so written inside 'if' block 
+                for (i = 0; i < updates.length; i++) {     // Iterate through the 'updates' variable's length
+                    let text = updates[i]['text'];         // Fetch the text stored in the 'updates' varaible
+                    let time = updates[i]['time'];         // Fetch the corresponding timestamp too
+          
+                    // Displaying both text and timestamp in the form of line-group badges.
+                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${text}  
+                    <span class="badge badge-primary badge-pill">${time}</span>
+                </li>`
+
+                    // Append the data received in the 'mystr' space of the section referenced by 'items' i.e Order Status Section
+                    $('#items').append(mystr);
+                }
+
+                // Fill in the Order Details
+                cart = JSON.parse(data['itemsJson']);                                              
+                for (item in cart)  
+                { 
+                let name = cart[item][1];                                // Fetch the name of the Product which belongs to the particular order               
+                let qty = cart[item][0];                                 // Fetch the quantity of the Product which belongs to the particular order
+                
+                // Display the Name and Quantity of the Product added
+                mystr = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${qty}</span>     
+                </li> `
+
+                // Append the received data to the Block 'Your Order Details' which is addressed by id 'itemdetails'
+                $('#itemdetails').append(mystr);
+                } 
+                
+            } else {
+                // Display a message if Product Details For the Entered order is not Available.
+            	mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+                $('#items').append(mystr);
+                $('#itemdetails').append(mystr);
+            }
+        });
+    event.preventDefault();                                // This Function prevents the page From reloading again after the Form submission is done.
+});
+
+  // If 'cart' item DOES NOT EXIST then create a blank dictionary named 'cart' which accepts key-value pairs.
+  if(localStorage.getItem('cart') == null)
+  {
+  var cart = {};
+  }
+  else
+  {
+  // Load the existing cart currently present
+  cart = JSON.parse(localStorage.getItem('cart'));
+  updateCart(cart);          // If 'cart' already Exists then display the no.of items within it along with '+' and '-' tags.
+  }
+
+  // If the add cart button is clicked then add/increment the item
+$('.divpr').on('click','button.cart',function(){
+  var idstr = this.id.toString();                            // The clicked 'id' of the Button would be stored in the form of string.
+  console.log(idstr);
+  if (cart[idstr] !=undefined)                               // If an item with the current id already exists
+  {
+    qty = cart[idstr] + 1;                                   // Simply increment the quantity w.r.t id of a product
+  }
+  else
+  {
+    qty = 1;
+    name = document.getElementById('name' + idstr).innerHTML;      // Name of the Product is also fetched when it is added newly into the cart.
+    price = document.getElementById('price' + idstr).innerHTML;    // Price to be fetched based on the Product currently selected
+  
+    cart[idstr] = [qty,name,parseInt(price)];                      // We need to parse the PRice and then make it a part of the array.
+  }
+  updateCart(cart);
+});
+
+function updateCart(cart)
+  {
+    var sum = 0;               // Initially no elements are present in the cart
+    for (var item in cart)     // If Elements are there in cart
+    {
+      sum = sum + cart[item][0];     // The elements start getting added in the cart
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;                          // The total Cart size is displayed
+   }
+   
+   $('#popcart').popover();
+   document.getElementById('popcart').setAttribute('data-content','<h5> Cart </h5>')
+
+</script>
+{% endblock %}

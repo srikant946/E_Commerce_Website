@@ -1,0 +1,88 @@
+{% extends 'shop/basic2.html' %}                        <!-- Extending the file which consists of the basic templates i.e navbar/JSS etc -->
+
+{% block title %} Contact Us - My Shopping Cart {% endblock %} 
+
+{% block body %} 
+<!-- Margin w.r.t y set to value 3 -->
+<div class="container my-3">
+    <h1>Contact Us</h1>
+        <!-- Redirects to 'contact' function of 'views.py' file and CSRF token is also declared over here -->
+    <form action = "/shop/contact/" method="post">{% csrf_token %}
+        <div class="form-group">
+            <label for="name">Name</label>
+            <!-- 'name' attribute assigned here to enable fetching of this field's data in 'views.py' file by function 'contact' -->
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name" required=True>
+        </div>
+  
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="yourname@example.com" required=True>
+        </div>
+  
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter Your Contact Number" required=True>
+        </div>
+
+        <div class="form-group">
+          <label for="desc">How May we help you?</label>
+          <textarea class="form-control" id="desc" name="desc" rows="3" required="True"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+
+</div>
+
+
+{% endblock %}
+
+{% block js %} 
+<script>
+  // If 'cart' item DOES NOT EXIST then create a blank dictionary named 'cart' which accepts key-value pairs.
+  if(localStorage.getItem('cart') == null)
+  {
+  var cart = {};
+  }
+  else
+  {
+  // Load the existing cart currently present
+  cart = JSON.parse(localStorage.getItem('cart'));
+  updateCart(cart);          // If 'cart' already Exists then display the no.of items within it along with '+' and '-' tags.
+  }
+
+  // If the add cart button is clicked then add/increment the item
+$('.divpr').on('click','button.cart',function(){
+  var idstr = this.id.toString();                            // The clicked 'id' of the Button would be stored in the form of string.
+  if (cart[idstr] !=undefined)                               // If an item with the current id already exists
+  {
+    qty = cart[idstr] + 1;                                   // Simply increment the quantity w.r.t id of a product
+  }
+  else
+  {
+    qty = 1;
+    name = document.getElementById('name' + idstr).innerHTML;      // Name of the Product is also fetched when it is added newly into the cart.
+    price = document.getElementById('price' + idstr).innerHTML;    // Price to be fetched based on the Product currently selected
+  
+    cart[idstr] = [qty,name,parseInt(price)];                      // We need to parse the PRice and then make it a part of the array.
+  }
+  updateCart(cart);
+});
+
+function updateCart(cart)
+  {
+    var sum = 0;               // Initially no elements are present in the cart
+    for (var item in cart)     // If Elements are there in cart
+    {
+      sum = sum + cart[item][0];     // The elements start getting added in the cart
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;                          // The total Cart size is displayed
+  }
+   
+  $('#popcart').popover();
+  document.getElementById('popcart').setAttribute('data-content','<h5> Cart </h5>')
+
+</script>
+
+{% endblock %}

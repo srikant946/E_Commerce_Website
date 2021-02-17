@@ -1,0 +1,948 @@
+Q.1 How is 'shop' getting displayed ? (#21)
+We create an app named 'shop'
+Within views.py we import HttpResponse and pass a function named 'index' for displaying output.
+
+Next we create and open 'urls.py' within our 'shop' app.
+We create our url patterns here pass our index function 'views.index'.
+
+Now, within urls.py of 'mac' we pass the url for 'shop' page.
+
+Q.2 Adding Bootstrap (#22)
+Within the 'shop' app create a directory named 'templates'.
+Within 'templates' create a directory named 'shop' AGAIN.
+
+Go to 'settings.py' file of 'mac' and add 'shop' within the 'INSTALLED_APPS' section.
+
+Initially starter template of Bootstrap was created and displayed.
+
+Q.3 Creating static folder (#22) (Initially ONLY)
+Within our 'shop' app we create a directory named 'static'.
+Within 'static' create a directory named 'shop' AGAIN.
+
+Q.4 Defining various pages (#23)
+Here, within 'urls.py' page of 'shop' we declare various endpoints.
+
+Q.5 Creating models and dealing with migrations.(#24)
+We create a class named 'Product' here which defines the properties for each product in db.
+
+Now since 'apps.py' file has already a class named 'ShopConfig', we edit the INSTALLED_APPS section of 'settings.py' file of 'mac'.
+We replace the 'shop' line added earlier with 'shop.apps.ShopConfig'. 
+
+Q.6 Django Admin (#25)
+Create a superuser using the command 'python manage.py createsuperuser'.
+
+First we register our 'Product' class created within 'models.py' file on going to 'admin.py' file and giving the command 'admin.site.register(Product)'.
+
+Q.7 Home page for 'shop' (#26)
+We first fetch the 'navbar' code from Bootstrap Documentation and add it into 'index.html' in 'templates/shop'.
+Then we define Carousel Controls.
+Next we create a container and within that we add cards for our carousel.
+We copy the code for card 4 times because grid display in Bootstrap is of 12 columns and hence we can display at most 4 cards at once.
+Then we add CSS and specify styling for every Component.
+Also image is fetched from the internet and stored in static folder and later mentioned in 'src' of cards.
+Image is loaded using Jinja templating way and before loading of image occurs we perform the '{% load static %}' operation.
+
+Q.8 Adding Media Files (#27)
+Initially more parameters are added in the the model 'Product'.
+Here, using 'upload_to' we add a random image in 'shop/images' directory.
+
+Q.9 Specifying Media Directory (#28)
+Here within 'settings.py' file we create a Media Directory i.e MEDIA_ROOT and MEDIA_URL.
+We write the following Commands :
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')              
+MEDIA_URL = '/media/'
+
+And within 'models.py' file we add the following lines :
+from django.conf import settings
+from django.conf.urls.static import static
+
+Also we add this line at the end:
++ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+
+MEDIA_ROOT provides Base directory of the project i.e 'mac' and also the directory name is passed here (Here it is 'media').
+Next Within 'mac' a directory known as 'media' is created and within that the directories specified under 'upload_to' section is created.
+Hence Sequence becomes mac --> mac --> media --> shop --> images --> image (Which was dynamically selected in the database).
+
+Q.10 Fetching products through Shell (#30)
+First we import timezone as "from django.utils import timezone".
+Product.objects.all() helps to fetch ALLthe members within the Class... Here ('Product' is class-name).
+
+If we want to add an entry through command line we first store the data in a variable and then we provide the Classname and within that in parentheses we pass all the values we want to provide to the new entry.
+Example: var myprod = Product(parameters...)
+
+To save the changes we do : var_name.save().
+Example: myprod.save()
+
+And then if we want to fetch out SPECIFIC Details from the entry that we stored we use the Dot(.) operator.
+Example: myprod.product_name
+
+Q.11 Creating 'About' Page and also dealing with Template Inheritance (#31)
+
+We create 2 files within 'shop/templates/shop' folder i.e basic.html and about.html.
+Within 'basic.html' file we copy navbar,CSS and optional JS tags as well.
+
+Then within 'about.html' we use Jinja Template and using that we inherit the data present in 'basic.html'.
+
+Within 'basic.html' besides <title>.. we add a Jinja Template For title.
+Later that template is used in 'about.html' and the Title of the page is then passed there.
+
+Similarly we create Empty CSS Block within <style> tags in 'basic.html'.
+The Css for the 'About' file is then passed within that block in 'about.html'.
+
+And we create a 'Body Block' as well in 'basic.html'.
+
+'indexbackup.html' is CREATED HERE and all current data of index.html is written over there!!
+
+Q.12 Logic For slide Changing on having more number of Products (#32)
+One Page Consists of 12 Columns and since we have created 4 Cards every card is allotted 3 column space.
+Hence every carousel at once can display 4 Slides ONLY.
+
+The Formula For Accepting the no of products and displaying them is as follows:
+n//4 + ceil(n/4 - n//4).
+
+'//' indicates 'Floating Point Division' Operator of Python.
+
+If the number of products is divisible by 4 then it would be shown on the current slide.
+But if the no. of products in NOT Divisible then it gets divided by 4 and then whatever decimal value is obtained is converted to a valid integer by 'ceil'.
+Hence it gets displayed on next screen.
+
+Q.13 Displaying Products  (#33)
+First we import our model within 'views.py' file.
+
+Then we create a 'params' dictionary which would help to fetch the data at run-time.
+
+Initial Code:
+''' products = Product.objects.all()
+    print(products)
+    n = len(products)
+    nSlides = n//4 + ceil((n/4) - (n//4))   '''
+We then first accomodate all the Objects of the class 'Product' using 'Product.objects.all()'
+Then we store the number of products using 'len' function in a variable 'n'.
+Based on 'n' variable's data the slides are then created using the SLIDE LOGIC.
+
+Now within 'index.html' leaving out the first silde which is 'active'.
+We apply a 'for' loop (Using Jinja Templating) over the 'second' slide and we pass the values within 'range'.
+'range' in turn runs from 1 to nSlide value as declared in the 'params' dictionary.
+
+Remaining Comments and Logic implemented explained on 'index.html' page.
+Line Numbers: 10,17,23,63,83,84,88,91,94,101,107-111,118.
+
+Q.14 Creating Multiple Slides for different Product Types. (#34)
+
+First we create a list of lists named 'allProds' in which we pass [products,range(1, nSlides), nSlides]
+Here within this, 'products' is the variable where all the Products from DB are obtained and stored.
+'range' indicates iterating from first till the nSlide Value.
+nSlides decides the No. of Slides to be created based on the number of products.
+
+All 'demo' associated with carousel control icons should be appended with {{forloop.counter}} because 'id' needs to be unique due to which only that particular slide would be responding
+
+Lines: 62,63,70,126,131,136.
+
+Q.15 Category wise Segregation (#35)
+
+We segregate Products based on category.
+Proper logic Mentioned in 'views.py' file .
+Lines within 'views.py' file : 20-27,36
+
+Q.16 Creating shopping cart using JS (#37)
+Firstly we introduce a Jinja Template as: {% block js %} {% endblock %} within 'index.html' and 'basic.html'.
+
+Then we introduce JS within 'index.html' file.
+// If 'cart' item DOES NOT EXIST then create a blank dictionary named 'cart' which accepts key-value pairs.
+  if(localStorage.getItem('cart') == null)
+  {
+  var cart = {};
+  }
+  else
+  {
+// Load the existing cart currently present
+  cart = JSON.parse(localStorage.getItem('cart'));
+
+Lines: 146,153
+
+Then we introduce jQuery within which we declare a class called 'cart'.
+$('.cart').click(function(){
+  var idstr = this.id.toString();                          // The clicked 'id' of the Button would be stored in the form of string.
+  console.log(idstr);
+  if (cart[idstr] !=undefined)                               // If an item with the current id already exists
+  {
+    cart[idstr] = cart[idstr] + 1;                           // Simply increment the cart[idstr] w.r.t id of a product
+  }
+  else
+  {
+     cart[idstr] = 1;                                        // Assign the current value of that particular id as 1
+  }
+localStorage.setItem('cart' , JSON.stringify('cart'))        // This is done to save the current state of localStorage even on reloading the page
+});
+
+Lines: 162-166 
+
+Then from all the 'Add To cart' Buttons we remove the <a> tag and 'href' and besides 'button' class we add 'cart' class.
+In place of <a> tag we place <button> tag and we add a new attribute called as id = pr{{product.id}}
+Here, 'pr' 
+
+Q.17 Slider Logic improvement and Displaying No.of items in the cart. (#38)
+
+Line : 113
+
+For displaying cart we write this code in Navbar i.e 'basic.html' file.
+    <li class="nav-item">
+        <a class="nav-link" href="#">Cart(<span id="cart">0</span>)</a>
+    </li> 
+
+In 'else' block we write the following line so that the above code is complimented and the cart value gets updated.
+document.getElementById('cart').innerHTML = Object.keys(cart).length;
+
+Q.18 Adding cart Popover and editing w.r.t other pages (#40)
+Firstly we remove the useless tabs earlier and we add 'Tracker' and other tabs in the Navbar.
+Tooltip is Majorly used for text purposes so instead of that we use popover.
+We fetch the 'Popover from Bottom' code from Bootstrap Website and we paste it besides 'Search' tab.
+
+<button type="button" class="btn btn-secondary mx-2" id="popcart" data-container="body" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Your Cart">
+      Cart
+      (<span id="cart">0</span>)
+</button>
+
+This would make a cart button on navbar ↑.
+
+The jQuery Command used to activate the popover is as follows:
+$('#popcart').popover();                               // Activates popover on clicking the 'Cart' button
+$('#popcart').popover('show');                         // Shows Popover by default even on not clicking the 'Cart' button 
+
+Next for 'popover' to display our desired data we set the data within to be displayed within popover as:
+// document.getElementById('popcart').setAttribute('data-content','<h5> Cart </h5>');         // For displaying 'Cart' in 'popover when clicked on the Button
+
+This is complimented by adding 'data-html' and setting it as 'True' within our <button> tag.
+
+We then create new HTML files and pass their reference to 'basic.html' file.
+
+Lines of basic.html: 54-56
+Lines of index.html: 184,186
+
+Q.19 Adding QuickView Button (#41)
+We create a 'QuickView' Button Besides 'Add To cart' Button by replicating the earlier button's code. (Line:102)
+  <a href="/shop/products/" button id= qv{{i.id}} class="btn btn-primary cart">QuickView </button> </a>
+
+We assign it a unique id so that when a particular product's QuickView is Clicked then only that products info is displayed 
+We group it under the name 'qv'.
+
+The passing of 'id' to 'views.py' file is done by the following line in 'urls.py' file (Line:16) ↓
+path('products/<int:myid>',views.prodview,name="ProductView")
+
+This line takes the id of QuickView Button that is clicked and stores it under the name 'myid'.
+Then this 'myid' is used to refer to the 'button' which was clicked, by function 'prodview' in 'views.py' file due to which it takes 'myid' also as a parameter.
+
+The product info gets displayed once its id is passed to this function present in 'views.py' file (Line:98-105) ↓
+def prodview(request,myid):
+    # Fetching the Product using the id 
+    product = Product.objects.filter(id=myid)
+
+    # On filtering by 'id' we COMPULSORILY mention dictionary i.e 'product' value as product[0] because only 1 item can be fetched at a time... If not mentioned..then display would be left blank 
+    return render(request,'shop/prodview.html',{'product': product[0]})
+
+Next within 'prodview.html' page...we perform Bootstrap adjustment as commented on the page.
+
+Next we create an 'about.html' page after copying Jumbotron Code For 'Hello World' Page and paste it over there and make custom modifications.
+
+Final Sequence of functioning of QuickView Button:
+Every QuickView button is assigned a unique id courtesy of qv{{product.id}} --> When We click on a Button that id gets stored in 'myid' variable as declared in 'urls.py' page 
+--> That id is passed to 'views.py' file and since 'product' (which is a dictionary) refers to the function 'prodview'...it calls that function --> Then The id passed, is matched with the actual 'id' as present in model 'Product'
+--> On matching it.. we then redirect to 'prodview.html' where our content gets displayed on the Layout as specified using Bootstrap.
+
+Q.20 Designing our 'contact.html' page (#42)
+Firstly we copy the 'Sample Form' Code From Bootstrap and we make changes to it according to our concern.
+
+Then in order to Submit the form properly we have to add 'csrf_token'.
+
+Also we assign a 'name' to each form field in 'contact.html' so that they can be addressed properly in 'views.py' file by the function 'contact'.
+
+Next we create a model named 'Contacts' in 'models.py' consisting of name,email,phone,desc. (Line:18-27)
+That model is then imported within 'views.py' and 'admin.py' file.
+We register our model and perform the migration activity.
+
+Then within our 'contact' function we define as follows (Line:68-76):
+def contact(request):
+    if request.method=="POST":                                                # Execute On 'POST' method getting called..
+        name = request.POST.get('name','')                                    # request.POST.get() is used to fetch the values sent through the POST method of the form.
+        email = request.POST.get('email','')
+        phone = request.POST.get('phone','')
+        desc = request.POST.get('desc','')
+        contact = Contact(name=name,email=email,phone=phone,desc=desc)        # Here the first field is of DB and second field is of the value that we fetched in the above lines.
+        contact.save()                                                        # Save the changes made in the database
+    return render(request,'shop/contact.html')                                # Return back to 'contact.html' page.
+
+Q.21 Add/Remove Buttons Creation (#44)
+We Initially Align all the products at the center of the card as follows: (Line:83)
+<div class="card align-text-center" style="width: 18rem;">
+
+We then add a <span> tag above our 'Add to Cart' Button so that the button can be targeted. (Line:99-103)
+Also we add a class named 'divpr' within the <span> tag so that '+' and '-' button's jQuery can be addressed
+
+We create a function named 'updateCart' to which we pass our existing cart.
+Then we use a 'for' loop to iterate within the cart items and on finding the 'item' we execute the following code:
+
+document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
+
+This above Code is broken down as:
+'div' + item refers to 'div' as the 'id' assigned in the <span> tag before 'Add to Cart' Function.
+'+ item' refers to the earlier 'id' alloted to the 'Add to Cart' Button i.e earlier it was allotted pr{{i.id}} so we again DO NOT write as ('divpr' + item) rather we write ('div' + item)
+
+""<span id='val" + item + "''>" + cart[item][0] + "</span>"" This is used to return the value of the no.of products present. [0] is used because only one product can be given attention at a time.
+
+'-' and '+' buttons are assigned an id and class named 'minus' and 'plus' respectively.
+'item' is passed in between them so as to increment/decrement its value based on the button clicked and its current value.
+
+After we finish displaying '+' and '-' values..we then have to make the'+' and '-' tags dynamic so we write the following jQuery Code.
+$('.divpr').on("click","button.minus",function()
+{
+a = this.id.slice(7, );                                   // Slicing Done because id initially is 'minuspr7' so we have to remove 'minus' from the id
+    cart['pr' + a][0] = cart['pr' + a][0] - 1;            // From Existing value of Product decrement by 1
+    cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);   // Written to prevent the Product quantites being negative..i.e once the cart value becomes 0 the next '-' click would also keep it to zero due to the 'max' function used over there. 
+    document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0]; // Display in the <span> tag the current value
+    updateCart(cart);                                     // updateCart function called
+});
+
+$('.divpr').on("click","button.plus",function()
+{
+    a = this.id.slice(6, );                                // Slicing Done because id initially is 'pluspr7' so we have to remove 'plus' from the id
+    cart['pr' + a][0] = cart['pr' + a][0] + 1;             // From Existing value of Product increment by 1
+    document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];   // Display in the <span> tag the current value
+    updateCart(cart);                                      // updateCart function called
+});
+
+Q.22 Popover Display (#45)
+We assign an 'id' to the 'product_name' in order to fetch the product name in the popover. 
+
+function updatePopover(cart)
+   {
+       console.log('We are inside updatePopover');
+       var popStr = "";                                     // Initially The String to be displayed is empty.
+       popStr = popStr + "<h5> Cart for your items in my shopping cart </h5><div class='mx-2 my-2'>";  // We assign a margin from both 'x' and 'y' perspective.
+       var i = 1;                                           // No. of items added in cart i.e 1,2,3,4
+       for (var item in cart){
+           popStr = popStr + "<b>" + i + "</b>. ";          // Spacing provided after the number and the number is in 'Bold'
+           popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0, 19) + "... Qty: " + cart[item][0] + '<br>';      // We fetch the Product through its 'id' assigned with it and quantity is obtained on the current value of the loop
+           i = i+1;                                         // Item added gets incremented by 1
+    }
+    document.getElementById('popcart').setAttribute('data-content', popStr);   // Displays the Contents within the popover.
+    $('#popcart').popover('show');
+
+Q.23 Display total Cart Value on Cart Button (#46)
+We declare a variable called 'sum' inside updateCart() function which is initialized to 0.
+Then we run a 'for' loop which iterates through the elements in the cart and subsequnetly increments the 'sum' value.
+Then the '-' '+' options are also made available for the products which are added into the cart.
+Finally the total number of elements in the cart is displayed by setting 'cart''s innerHTML equal to the value of 'sum'.
+
+function updateCart(cart)
+  {
+    var sum = 0;               // Initially no elements are present in the cart
+    for (var item in cart)     // If Elements are there in cart
+    {
+      sum = sum + cart[item][0];     // The elements start getting added in the cart
+      document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;                          // The total Cart size is displayed
+  }
+
+Q.24 Clear Cart Buttons and Checkout Button Declaration (#47)
+Within our 'updatePopover()' we add the following line in order to include 2 buttons:
+popStr = popStr + "</div> <a href='/shop/checkout'> <button class='btn btn-primary mx-2 my-2' id ='checkout'> Checkout </button> </a> <button class='btn btn-primary' <a id ='clearcart' href='#'> Clear Cart </a> </button>  "
+
+Our Clearcart function also would Lie WITHIN updatePopover() as follows:
+ $('[data-toggle="popover"]').on('shown.bs.popover', function() {
+    // do something…
+    console.log('I am inside testing function')
+    console.log($('#clearcart'))
+    $('#clearcart').click(function() {
+
+        console.log('Inside Clear Cart Function')
+        cart = JSON.parse(localStorage.getItem('cart'));
+        for (var item in cart) 
+        {
+            document.getElementById('div' + item).innerHTML = '<button id="' + item + '"class=btn btn-primary cart">Add To Cart</button>'
+        }
+        localStorage.clear();
+        cart = {};
+        updateCart(cart);
+
+    });
+
+Q.25 Checkout Page (#48)
+A checkout page named 'checkout.html' is created and then from Bootstrap in List Groups we selected list with Badges.
+We copy its code and we paste it in our 'checkout.html' page.
+
+Similarly we copy form from the Bootstrap Documentation and paste it in 'checkout.html' page.
+We then change the Form fields based on our concern.
+
+Q.26 Adding items to 'Checkout' page (#49)
+We assign an 'id' to the list-group named 'items' and that is used to target it regardless of cart being empty or not.
+
+Initially declared list-group members (which were brought from Bootstrap) are deleted.
+We then add [0] to all the 'idstr' values so that only the 'quantity' is fetched and NOT the name..this has to be done because we store both 'name' and 'qty' in a single array.
+So [0] refers to 'qty' and [1] refers to 'name'.
+
+We only display name of product in 'else' block because only 'else' block deals with addition of new products in the cart. The name is obtained because of 'namepr' id assigned to 'product_name' initially during display of Popover.
+So it means that old products which are already in the cart have their names already in the popover.
+
+Next we add JS in our 'checkout.html' page.
+First we add the block of code that checks if the product is there in cart or not.
+Next we iterate through the elements in the cart using 'item' variable and accordingly display the name and quantities of the products in the form of 'list-group-badges'.
+Subsequently we store the amount of products in the cart using 'sum' variable which later on prints it onto the 'cart' button.
+All the products currently present in the cart are then appended in the list-group using 'items' class reference.
+
+Also we check if cart is empty...if Yes, then we display a message indicating to fill in some Products into the cart using 'append' function referring to 'items' i.e list-group.
+
+JS Code written is as follows: (Lines:76-113)
+// Check if cart exists or not
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else 
+{
+    // Fetch the data present in the cart
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+console.log(cart);
+// Initially declare 'sum' as 0.
+var sum = 0;
+
+if ($.isEmptyObject(cart)) {
+    //If cart is kept empty
+    mystr = ` <p> Your cart is empty, please add some items to your cart before checking out! </p> `
+    $('#items').append(mystr);           // '#items' is used to refer to the list-group since the id of list-group is 'items'
+} 
+else 
+{
+    for (item in cart) 
+    {
+        //name[1] and qty[0] because both are stored in an array together.
+        let name = cart[item][1];
+        let qty = cart[item][0];
+        sum = sum + qty;                     // increment 'sum' value based on the quantity of products
+        // Used to display 'name' and 'quantity' of products in 'list with badge' form.
+        mystr = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${qty}</span>
+                </li> `
+        $('#items').append(mystr);
+    }
+}
+// Total elements present in the cart is displayed on the 'Cart' button using this line of code.
+document.getElementById('cart').innerHTML = sum;
+
+Within 'if' and 'else' block of jQuery command for $('divpr') we write the following in order to store both qty and name in ONE array:
+if (cart[idstr] !=undefined)                                    // If an item with the current id already exists
+  {
+    qty = cart[idstr][0] + 1;                                   // Simply increment the quantity w.r.t id of a product
+  }
+  else
+  {
+    qty = 1;
+    name = document.getElementById('name' + idstr).innerHTML;  
+    cart[idstr] = [qty,name];
+
+Q.27 Creating model named 'Order' (#50)
+We create a model named order where we would include all the order details such as order_id,items_json,name,address,city,state,zip_code and phone.
+We then import this model into 'admin.py' and then register it.
+Also we import this model created in 'views.py' file.
+
+The model is declared as follows: (Lines: 29-39)
+class Orders(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    items_json = models.CharField(max_length=5000)
+    name = models.CharField(max_length=90)
+    email = models.CharField(max_length=111)
+    address= models.CharField(max_length=111)
+    city = models.CharField(max_length=111)
+    state = models.CharField(max_length=111)
+    zip_code = models.CharField(max_length=111)
+    phone = models.CharField(max_length=100,default="")
+
+We also add a hidden type for 'item_json' and assign it a name and a value.
+Within the form we then specify its action and method i.e POST along with declaring a CSRF Token.
+
+Then to all the Form fields in 'checkout.html' we assign an id and a name.
+The 'id' attribute assigned to the form fields MUST BE SAME as that assigned in the model 'ORDERS'.
+
+The function related to order placement i.e 'checkout' is as follows:
+def checkout(request):
+    if request.method=="POST":
+        items_json = request.POST.get('itemsJson','')      // The 'itemJson' value is obtained from the 'checkout.html' file and its 'id' is passed over here in 'items_json' object.
+        name = request.POST.get('name','')
+        amount = request.POST.get('amount','')
+        email = request.POST.get('email','')
+        address = request.POST.get('address1','') + " " + request.POST.get('address2','') 
+        city = request.POST.get('city','')
+        state = request.POST.get('state','')
+        zip_code = request.POST.get('zip_code','')
+        phone = request.POST.get('phone','')
+
+        // Database attribute name corresponding to the variable name declared in the function
+        order = Orders(items_json=items_json,name=name,email=email,address=address,city=city,state=state,zip_code=zip_code,phone=phone,amount=amount)
+        order.save()
+
+Code wriiten in 'views.py' file which would come into effect after finishing the form filling procedure:
+
+        thank = True            # 'thank' variable created here with value 'True' which is referenced in 'checkout.html'
+        id = order.order_id     # 'id' is obtained based on the current id of the product as mentioned in the database.This too is referenced in 'checkout.html'        
+        # return render(request,'shop/checkout.html', {'thank':thank,'id':id})
+
+JS Code written within 'checkout.html' after form filling procedure is as follows:
+
+$('#itemsJson').val(JSON.stringify(cart));  // To maintain the JSON item count even after refreshing the page.
+{% if thank %}                              // 'thank' variable referenced here from 'views.py' file which was declared in 'checkout' function.
+// The 'id' passed here is fetched from 'views.py' file from the function 'checkout'
+alert('Thanks for ordering with us..Your order Id is {{id}}. Use it to track your order using our order tracker');
+localStorage.clear();                       // Once customer finishes ordering the cart is cleared
+document.location = "/shop";                // The customer is agian redirected back to the home page.
+{% endif %}
+
+Q.28 Creating the First Page and Tracker Page (#51)
+We create directory named 'templates' within 'mac' and in that we create 'index.html' page
+The code of 'index.html' page is then fetched from Bootstrap code for a normal page.
+
+We create a 'views.py' file within 'mac' folder and within that we define the function named 'index' which redirects it to 'urls.py' file.
+The 'urls.py' file redirects to 'index.html' page and the content gets displayed.
+
+Now we create a new model named 'OrderUpdate' for tracking the order.
+We import & register it in 'admin.py' file and also import it inj 'views.py' file of 'shop'.
+
+The model 'OrderUpdate' is defined as follows:
+class OrderUpdate(models.Model):
+    update_id = models.AutoField(primary_key=True)
+    order_id = models.IntegerField(default="")
+    update_desc= models.CharField(max_length=100)
+    timestamp = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.update_desc[0:7] + "..."
+
+We migrate this to the DB.
+And to handle this model we define a function named 'tracker' in 'views.py' file.
+
+The form created in 'tracker.html' page has 2 fields and both the fields are assigned 'id' and 'name'.
+This 'id' and 'name' is passed to the local variable of the function 'tracker' (Here the local variable is 'orderId').
+Sequence :
+Data of 'orderId' of tracker.html is stored in 'orderId' of function 'tracker' of 'views.py' it is then given to 'order_id' of DB OrderUpdate to fetch the value from there.
+
+The 'tracker' file is as follows:
+def tracker(request):
+    if request.method=="POST":
+        orderId = request.POST.get('orderId', '')
+        email = request.POST.get('email', '')
+        try:
+            order = Orders.objects.filter(order_id=orderId, email=email)
+            if len(order)>0:
+                update = OrderUpdate.objects.filter(order_id=orderId)
+                updates = []
+                for item in update:
+                    updates.append({'text': item.update_desc, 'time': item.timestamp})
+                    response = json.dumps([updates,order[0].items_json],default=str)
+                return HttpResponse(response)
+            else:
+                return HttpResponse('{}')
+        except Exception as e:
+            return HttpResponse('{}')
+    return render(request, 'shop/tracker.html')
+
+All the Procedure for the above ↑ code is commented on the main file.
+Also in order for json dumps to work we need to import json.
+
+Next in order to submit the form and retrieve the order details on the basis of email and orderid validation we use AJAX.
+$('#trackerForm').submit(function(event) {
+    $('#items').empty();
+    var formData = {
+        'orderId': $('input[name=orderId]').val(),
+        'email': $('input[name=email]').val(),
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+    $.ajax({
+            type: 'POST',
+            url: '/shop/tracker/',
+            data: formData,
+            encode: true
+        })
+        .done(function(data) 
+        {
+            $('#itemdetails').empty();
+            console.log(data)
+            updates = data[0];
+            data = JSON.parse(data);
+
+             if (updates.length > 0) 
+            {
+                for (i = 0; i < updates.length; i++) {     // Iterate through the 'updates' variable's length
+                    let text = updates[i]['text'];         // Fetch the text stored in the 'updates' varaible
+                    let time = updates[i]['time'];         // Fetch the corresponding timestamp too
+          
+                    // Displaying both text and timestamp in the form of line-group badges.
+                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${text}  
+                    <span class="badge badge-primary badge-pill">${time}</span>
+                </li>`
+
+                    // Append the data received in the 'mystr' space of the section referenced by 'items' i.e Order Status Section
+                    $('#items').append(mystr);
+                }
+        });
+  event.preventDefault();
+});
+
+Next we ADD jQuery Decompressed CDN version in place of jQuery MIN version to our code so that all our features of Ajax and other code snippets are in working condition.
+
+Next in json.dumps we add 'default=str' to Prevent JSON Serializable Exception
+response = json.dumps(updates,default=str) 
+
+Next we design how the Order details are fetched on the Successful Entry of 'orderid' and 'email' in the 'tracker.html' page.
+The Code for design is mentioned above from lines 573-588.
+
+Q.29 Creating 'Product Details' Section in our website (#53)
+We need to also display what all products make up the order.
+
+So we create a list-group in 'tracker.html' with 'id' as 'item-details' (Line:32-38 of 'tracker.html'):
+<div class="col my-4">
+      <h2>Your Order Details</h2>
+      <div class="my-4">
+          <ul class="list-group" id="itemdetails">
+          </ul>
+      </div>
+    </div>
+
+This is possible only when we change the 'json.dumps' line of code in 'tracker' function: (Line 90 of views.py file)
+It is modified as follows:
+response = json.dumps([updates,order[0].items_json],default=str) 
+
+Then for Displaying the fetched Order Details we add the following ↓ code in 'trackerForm' function of jQuery:
+Lines: 83-106 of 'tracker.html' file.
+All meaning of this code commented in the main file.
+
+                // Fill in the Order Details
+                cart = JSON.parse(data[1]);
+                for (item in cart) 
+                {
+                let name = cart[item][1];
+                let qty = cart[item][0];
+                mystr = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${qty}</span>
+                </li> `
+                $('#itemdetails').append(mystr);
+                } 
+                
+            } else {
+            	mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+                $('#items').append(mystr);
+                $('#itemdetails').append(mystr);
+            }
+
+Q.30 Displaying Total Price (#54)
+Firstly within cards present in 'index.html' page we add the following line of code below the description of the card: (Line:)
+<h6 class="card-title">Price:<span id="pricepr{{i.id}}">{{i.price}}</span> </h6>
+
+Within 'index.html' file we make the following changes i.e we also fetch the product price if its is newly added into the cart and the price is also stored in the array that belongs to a particular product which stores qty,name and price(after Parsing it) (Lines:166-185):
+$('.divpr').on('click','button.cart',function(){
+  var idstr = this.id.toString();                            // The clicked 'id' of the Button would be stored in the form of string.
+  console.log(idstr);
+  if (cart[idstr] !=undefined)                               // If an item with the current id already exists
+  {
+    qty = cart[idstr] + 1;                                   // Simply increment the quantity w.r.t id of a product
+  }
+  else
+  {
+    qty = 1;
+    name = document.getElementById('name' + idstr).innerHTML;      // Name of the Product is also fetched when it is added newly into the cart.
+    
+    price = document.getElementById('price' + idstr).innerHTML;    // Price to be fetched based on the Product currently selected
+  
+    cart[idstr] = [qty,name,parseInt(price)];                      // We need to parse the PRice and then make it a part of the array.
+  
+  }
+  updateCart(cart);
+});
+
+Within 'else' block of 'checkout.html' file we make the following changes:
+var sum = 0;
+
+// Initially 'totalPrice' is also Declared as 0
+var totalPrice = 0;
+
+if ($.isEmptyObject(cart)) {
+    //If cart is kept empty
+    mystr = ` <p> Your cart is empty, please add some items to your cart before checking out! </p> `
+    $('#items').append(mystr);           // '#items' is used to refer to the list-group since the id of list-group is 'items'
+} 
+else 
+{
+    for (item in cart) 
+    {
+        //name[1] and qty[0] because both are stored in an array together.
+        let name = cart[item][1];
+        let qty = cart[item][0];
+        
+        let itemPrice = cart[item][2];       // 'itemPrice' variable defined here which stores the value of an individual product
+        
+        sum = sum + qty;                     // increment 'sum' value based on the quantity of products
+        
+        
+        // Calculation of 'totalPrice' takes place here 
+        totalPrice = totalPrice + qty*itemPrice;
+        
+        // Used to display 'name' and 'quantity' of products in 'list with badge' form.
+        mystr = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+                <span class="badge badge-primary badge-pill">${qty}</span>
+                </li> `
+        $('#items').append(mystr);
+    }
+}
+// Total elements present in the cart is displayed on the 'Cart' button using this line of code.
+document.getElementById('cart').innerHTML = sum;
+
+// Total Price gets displayed in the innerHTML of 'totalPrice' variable.
+document.getElementById('totalPrice').innerHTML = totalPrice;
+
+Next, below the list-group that displays the items in 'checkout.html' file we add the following lines of code: (Lines: 15-19)
+<nav aria-label="breadcrumb">
+        <ol class="breadcrumb mt-3">
+          <li class="breadcrumb-item active" aria-current="page">Your Cart total is <b>Rs.<span id="totalPrice"></span></b>  Enter Your details below and place your order</li>
+        </ol>
+      </nav>
+
+This is a breadcrumb which displays the total price of the Products currently present in the cart. ↑
+
+Q.31 PayTm Integration (#66)
+Initally we would focus on how the Total Price for a particular order can be displayed in the Database as an attribute.
+Firsty we add a variable called 'amount' in our model 'Orders'
+amount= models.IntegerField(default=0)
+
+Then we apply the migrations and perform them.
+
+We then create a hidden field with 'id' and 'name' as 'amount' in 'checkout.html'. (Line : 30 of checkout.html)
+<input type="hidden" name="amount" id="amount">
+
+Also we add a jQuery through which the 'amount' variable can obtain the current totalPrice and store it.
+$('#amount').val($('#totalPrice').html());
+
+In 'checkout' function of 'views.py' file:
+We add a variable called 'amount':
+amount = request.POST.get('amount','')
+
+And also we make it reflect in the DB:
+order = Orders(items_json=items_json,name=name,email=email,address=address,city=city,state=state,zip_code=zip_code,phone=phone,amount=amount)
+
+PAYTM
+We create a new directory OUTSIDE 'shop' called 'Paytm'
+Within that we create a file named 'Checksum.py'.
+
+Go to https://github.com/Paytm-Payments/Paytm_Web_Sample_Kit_Python
+Within that select pythonKit 3.x --> Checksum.py
+
+Copy the file's data and paste it in the 'Checksum.py' file of 'PayTm' Directory.
+
+Then we add the following command in our 'Checksum.py' file.
+pip install cryptodome
+
+Within 'Checksum.py' file wherever AES is present i.e in '__decode__' and '__encode__' function  and also where to_encode variable is declared add the following:
+.encode('utf-8)
+
+Example:
+__decode__ Function:
+c = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv.encode('utf-8'))
+
+__encode__ Function:
+c = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv.encode('utf-8'))
+
+Now within the function 'checkout' in 'views.py' file:
+We create a dictionary named 'param_dict' and within that we add the data copied from test.cgi function of Paytm from GitHub.
+ param_dict = {
+            'MID':'WorldP64425807474247',
+            'ORDER_ID':str(order.order_id),
+            'TXN_AMOUNT':str(amount),
+            'CUST_ID':email,
+            'INDUSTRY_TYPE_ID':'Retail',
+            'WEBSITE':'WEBSTAGING',
+            'CHANNEL_ID':'WEB',
+	          'CALLBACK_URL':'http://127.0.0.1:8000/shop/handlerequest/',
+        }
+
+We create a 'render' function which would take us to 'paytm.html' along with our created 'param_dict' values.
+return render(request, 'shop/paytm.html', {'param_dict' : param_dict})
+
+We also create a function named 'handlerequest' in 'views.py' file initially under the media Query 'csrf_exempt'
+Then we specify the Endpoint for 'handlerequest' method in 'urls.py' file of 'shop':
+path('handlerequest/',views.handlerequest,name="HandleRequest"),
+
+Then within our 'templates' directory of 'shop' we create a file called as 'paytm.html'.
+Within that we initially add header tags which give us the instructions to wait and tell about the payment process currently going on
+Then we create a form as follows (Lines: 12-20):
+<!-- Staging Endpoint entered here is as specified as in the PayTm website -->
+    <!-- Method is set to be POST with name: paytm -->
+    <form action="https://securegw-stage.paytm.in/order/process" method="post" name="paytm">
+
+        <!-- From 'param_dict' dictionary as declared in the 'checkout' function we take its keys and values and display the appropriate one based on the order_id and email as passed in the 'param_dict' variable values -->
+        {% for key,value in param_dict.items %}
+        <input type="hidden" name="{{key}}" value="{{value}}"/> 
+        {% endfor %}
+    </form>
+
+Also we add a <script> tag to simply sumbit the form that we have created above (Line:24):
+document.paytm.submit();
+
+# We initially import Checksum from PayTm directory over here below 'param_dict' in 'checkout' function. 
+# Then we use the generate_checksum method which takes in 2 arguments i.e (param_dict and Merchant Key) 
+param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict,MERCHANT_KEY)
+
+Next we create the function that PayTm would use to Send us Info about Payment i.e handlerequest():
+But first we import the decorator responsible for exempting CSRF Token:
+Commenting for the below ↓ code is done in the main page....
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def handlerequest(request):
+    #Paytm will send you post request
+    form = request.POST
+    response_dict = {}
+    for i in form.keys():
+        response_dict[i] = form[i]
+        if i == 'CHECKSUMHASH':
+            checksum = form[i]
+
+    verify = Checksum.verify_checksum(response_dict,MERCHANT_KEY, checksum)
+    if verify:
+        if response_dict['RESPCODE'] == '01':
+            print("Order Successful")
+        else:
+            print('Order Was not successful because' + response_dict['RESPMSG'] )
+
+    return render(request, 'shop/paymentstatus.html', {'response':response_dict})
+    pass
+
+We Also create an HTML Page in 'templates' directory of 'shop' named as 'paymentstatus.html'.
+Here we inherit 'basic.html' for BootStrap and other functionalities.
+
+Then we display Order id using 'response' dictionary passed through render function as:
+<div class="col my-4">
+        <h2>Payment Status regarding your order id {{response.ORDERID}}</h2>
+          
+        {% if response.RESPCODE == "01" %}
+        <h4>Order Success</h4>
+        {% else %}
+        <h4>Order Failure</h4>
+        {% endif %}
+
+Q.32 Search Feature (#67)
+We initially copy the Code of 'index' function same as in 'search' function in 'views.py' file.
+
+Then within <form> of 'Search' in 'basic.html' we add method and action to be performed for that form once the button is clicked:
+<form method="get" action="/shop/search/" class="form-inline my-2 my-lg-0">
+
+It is ESSENTIAL to write the method:get and 'action:/shop/search/' so that the form on submission can be redirected to 'search' function in 'views.py' file.
+Also within the Search field we assign a 'name' and an 'id' to target it in 'query' of 'search' function in 'views.py':
+<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
+
+All important commenting done on the main page... (Lines:39,40,41,49,57,59,62,66,69)
+The 'search' function looks as:
+def search(request):
+    query = request.GET.get('search')                        # Whatever We pass into the Search Box is then stored in 'query' variable.
+    allProds=[]                                  
+    catprods = Product.objects.values('category','id')
+    cats = {item['category'] for item in catprods}
+    for cat in cats:
+        prodtemp = Product.objects.filter(category=cat)
+        prod = [item for item in prodtemp if searchMatch(query,item)]
+        n = len(prod)
+        nSlides = n//4 + ceil((n/4) - (n//4))
+
+        if len(prod)!= 0:
+            allProds.append([prod , range(1,nSlides), nSlides])
+    params ={'allProds':allProds}
+    
+    if len(allProds) == 0 or len(query)<4 :
+        params = {'msg': "Please Enter Relevant Data capable of being searched"}
+
+    return render(request,'shop/search.html',params)        # No need to add 'templates' folder in argument because each folder has its own template folder and we refer it within referring the file..i.e 'shop' here is the template folder
+
+All important commenting done on the main page
+Also the 'searchMatch' Function which specifically searches for our query looks like this:
+Also it takes in the 'query' received from the 'search' function of 'views.py' file and it takes in a local variable named 'item' which corresponds to the 'Product' model Attribute.
+def searchMatch(query,item):
+    if query in item.desc.lower() or query in item.product_name.lower() or query in item.category.lower():
+        return True
+    else:
+        return False
+
+Then we create a file called 'search.html' and we copy all of 'tracker.html' content within it.
+The we give a name to that page and add JS code in order to handle our search within {% block js %}:
+Commenting done within the main page.... (lines:122,123,124)
+
+{% if msg|length != 0 %}
+alert ('{{msg}}')
+window.location.href = "/shop"
+{% endif %}
+
+Q.33 Fixing a Bug in Tracker (#68)
+Firstly within json.dumps in 'tracker' function instead of a list we create dictionary and we assign 'updates' and 'itemsJson' as keys:
+response = json.dumps({'status':'success','updates': updates,'itemsJson': order[0].items_json},default=str) # 'default=str' added in order to prevent JSON Serializable Exception from occuring 
+
+Then we change data acceptance paramtersand [0] and [1] within them become ['updates'] and ['itemsJson'] in 'tracker.html'.
+cart = JSON.parse(data[1]);             ----------->              cart = JSON.parse(['itemsJson'])
+updates = data[0];                      ------------>             updates = JSON.parse(data); + (updates = data['updates'];) <-- Added newly Inside the 'if'  
+
+Also the 'if' condition changes:
+if (updates.length > 0)               ----------------->  if (data['status'] == 'success') 
+{                                                         {
+
+Then in '.done() function' we dd the following line so that on repeatedly clicking the Button 'details' DONT get loaded AGAIN.
+$('#itemdetails').empty();  
+
+Q.34 Change Pssword Of Django Admin (#69)
+In order to change Password we can write python manage.py changepassword user__name (<-- user_name eg. srikant to be passed here)
+
+Similarly multiple superusers can also be created for the same DB.
+Locate the file then run the following command: python manage.py createsuperuser user_name (<-- user_name eg. srikant to be provided here)
+
+Q.35 Making item disapper from cart on its deletion i.e its quantity becoming zero (#57)
+Within our code for '-' button we add 'if' and 'else' block in 'index.html' as follows:
+if (cart['pr' + a][0] == 0 )
+    {
+      document.getElementById('divpr' + a).innerHTML = <button id ="pr' +a+'" class = "btn btn-primary cart">Add To Cart </button>
+      delete cart ['pr' + a];
+    }
+    else
+    {
+      document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    }
+
+
+Q.# Changes by Srikant 
+Added {{q,id}} which was missing besides /shop/products/ so that QuickView can work properly.
+Removed Buttons beside QuickView. i.e Buy Now and Add to Cart.
+
+<form> tag was extra in 'contact.html' due to which Database submission wasnt working.
+So that was removed.
+
+Made 'cart' functionalities all over the page by pasting 'updateCart' and 'cart' creation JS code in all Files.
+Text editing and Code Cleaning Also Done.
+
+Added new Code For Search in order to support Various Types of Search.
+def searchMatch(query,item):
+    if query in item.desc.lower() or query in item.product_name.lower() or query in item.category.lower():
+        return True
+    elif query in item.desc.capitalize() or query in item.product_name.capitalize() or query in item.category.capitalize():
+        return True
+    elif query in item.desc.upper() or query in item.product_name.upper() or query in item.category.upper():
+        return True
+    else:
+        return False
+
+Added 'col' in the MAIN 'carousel' Bootstrap line ('main' as in the one controlling the carousel) so that cards dont stick to each other:
+<div id="demo{{forloop.counter}}" class="col carousel slide my-3" data-ride="carousel">
+
+Same ↑ change was also done for 'search.html' Bootstrap line for the same reason.
+
+Set the width of image as 'max-width'.
+
+
+
+

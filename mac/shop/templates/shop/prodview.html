@@ -1,0 +1,82 @@
+{% extends 'shop/basic.html' %}                        <!-- Extending the file which consists of the basic templates i.e navbar/JSS etc -->
+
+<!-- Product name would be displayed based on the corresponding 'id' of the 'QuickView' button -->
+{% block title %} {{product.product_name}} - My Shopping Cart {% endblock %} 
+
+{% block body %} 
+<!-- 'my-4' means value of margin w.r.t y is set to 4 -->
+<div class="container my-4">
+    <!-- 'row' specified here in order to pack both the column spaces -->
+   <div class = "row">
+       <!-- 'col' with width of 4 declared over here for image -->
+       <div class="col-md-4"> 
+        <!-- 'row' created in order to divide the 4 column workspace into row where one row would consist of image and another row would consist of buttons -->
+       <div class="row">
+        <!-- Image fetched from the media directory -->
+        <img src="/media/{{product.image}}" width="265px" height="265px">
+       </div>
+
+        </div>
+        <!-- 8 column space declared over here and the Name,Price & Description of the Product is shown here -->
+        <div class = "col-md-8">
+         <h5>{{product.product_name}}</h5>
+         <p><b>Rs {{product.price}}</b></p>      <!-- Price Displayed in Bold -->
+         <p>{{product.desc}}</p>
+        </div>
+
+    </div>      <!-- The row responsible for packing 2 columns ends here -->
+</div>
+
+
+{% endblock %}
+
+{% block js %} 
+<script>
+  // If 'cart' item DOES NOT EXIST then create a blank dictionary named 'cart' which accepts key-value pairs.
+  if(localStorage.getItem('cart') == null)
+  {
+  var cart = {};
+  }
+  else
+  {
+  // Load the existing cart currently present
+  cart = JSON.parse(localStorage.getItem('cart'));
+  updateCart(cart);          // If 'cart' already Exists then display the no.of items within it along with '+' and '-' tags.
+  }
+
+  // If the add cart button is clicked then add/increment the item
+$('.divpr').on('click','button.cart',function(){
+  var idstr = this.id.toString();                            // The clicked 'id' of the Button would be stored in the form of string.
+  console.log(idstr);
+  if (cart[idstr] !=undefined)                               // If an item with the current id already exists
+  {
+    qty = cart[idstr] + 1;                                   // Simply increment the quantity w.r.t id of a product
+  }
+  else
+  {
+    qty = 1;
+    name = document.getElementById('name' + idstr).innerHTML;      // Name of the Product is also fetched when it is added newly into the cart.
+    price = document.getElementById('price' + idstr).innerHTML;    // Price to be fetched based on the Product currently selected
+  
+    cart[idstr] = [qty,name,parseInt(price)];                      // We need to parse the PRice and then make it a part of the array.
+  }
+  updateCart(cart);
+});
+
+function updateCart(cart)
+  {
+    var sum = 0;               // Initially no elements are present in the cart
+    for (var item in cart)     // If Elements are there in cart
+    {
+      sum = sum + cart[item][0];     // The elements start getting added in the cart
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;                          // The total Cart size is displayed
+   }
+   
+  $('#popcart').popover();
+  document.getElementById('popcart').setAttribute('data-content','<h5> Cart </h5>')
+</script>
+
+{% endblock %}
+

@@ -1,0 +1,30 @@
+'Cdn' stands for Content Delivery Network.
+Whenever we use 'cdn' files it gets stored in the cache of our browser and hence pages get loaded faster.
+
+'makemigrations' command is used to enact upon all the changes made by user to the database.
+'migrate' command is used to APPLY those changes.
+
+Within models... 'default' field specifies the data to be stored currently on older fields before migration was applied.
+
+'DRY' Principle means 'Do Not Repeat Yourself'.
+'Django Templates works on this principle.
+
+'loaclStorage' Always takes in a KEY-VALUE pair of Strings.
+
+'forloopcounter' ALWAYS begins with 1.
+
+If primary key is not created then Django creates an 'id' by default.
+
+For Resolving Page Loading Errors:
+Stop the Server --> Task MAnager --> Details --> python.exe --> End Task
+
+For phone numbers in Form Fields we use the type 'tel'.
+
+Default scripting language in HTML 5 is JS.
+
+f' string is generally used to print the type of Exception which occurs.
+
+decorator changes the functionality of a particular function.
+
+json.dumps CONVERTS  a dictionary or a list into JSON.
+

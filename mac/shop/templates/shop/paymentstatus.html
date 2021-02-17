@@ -1,0 +1,22 @@
+{% extends 'shop/basic2.html' %}
+{% block title%} My Shopping Cart Tracker Page {% endblock %}
+{% block body %}
+<div class="container">
+    <!-- Display all the contents currently present in the 'response' directory -->
+    {{response}}
+    <div class="col my-4">
+        <!-- Order id displayed using the dictionary object i.e 'response' which was passed through 'render' function -->
+        <h2>Payment Status regarding your order id {{response.ORDERID}}</h2>
+        
+        <!-- We Also Pass the RESPCODE here and check if the 'handleRequest' returned a Successful answer or Unsucessful Answer -->
+        {% if response.RESPCODE == "01" %}
+        <h4>Order Success</h4>
+        {% else %}
+        <h4>Order Failure</h4>
+        {% endif %}
+{% endblock %}
+{% block js %}
+<script>
+
+</script>
+{% endblock %}

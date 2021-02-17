@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayTm Merchant Payment Page</title>
+</head>
+<body>
+    <h1>Redirecting you to the Paytm Merchant</h1>
+    <h1>Please Do not refresh the page</h1>
+
+    <!-- Staging Endpoint entered here is as specified as in the PayTm website -->
+    <!-- Method is set to be POST with name: paytm -->
+    <form action="https://securegw-stage.paytm.in/order/process" method="post" name="paytm">
+
+        <!-- From 'param_dict' dictionary as declared in the 'checkout' function we take its keys and values and display the appropriate one based on the order_id and email as passed in the 'param_dict' variable values -->
+        {% for key,value in param_dict.items %}
+        <input type="hidden" name="{{key}}" value="{{value}}"/> 
+        {% endfor %}
+    </form>
+</body>
+<script>
+    // Submit the above created Form
+    document.paytm.submit();
+</script>
+</html>

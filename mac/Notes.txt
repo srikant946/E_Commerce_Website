@@ -1,0 +1,93 @@
+SEQUENCE OF DISPLAYING 'shop' DOCUMENT:
+
+THE FILE WHICH IS TO BE DISPLAYED IS PRESENT WITHIN 'index.html' file in 'templates' folder
+
+Initially the Control goes 'urls.py' file of 'mac'...which has path which in turn includes 'shop.urls'
+The Control then Goes into 'urls.py' file of 'shop'....whose path includes 'index' function of 'views.py'
+Then Control Goes into 'index' function of views.py which renders 'index.html' file from 'shop' folder of 'templates' folder
+
+CDN stands For Content Delivery Network..
+CDN files DO NOT NEED static referencing since they are stored in the 'cache' of the browser.
+
+'migrate' command is used to make tables and apply changes within the default 'sqlite' database (unless changed)
+'makemigrations' command refers to store the changes to be made and 'migrate' command is used to execute the changes made.
+
+# SHELL COMMAND (VIDEO 31)
+C:\Users\Admin\Desktop\MyAwesomeCart\mac>python manage.py shell
+Python 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 22:45:29) [MSC v.1916 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+# Import created model from 'models.py' file
+>>> from shop.models import Product
+
+# Displaying all the objects currently present in the DB before addition operation
+>>> Product.objects.all()
+<QuerySet [<Product: watch>, <Product: ghadi>, <Product: third Object>, <Product: tissot>]>
+
+# Importing timezone from 'django.utils' package
+>>> from django.utils import timezone
+
+# Assigning all data fields to the newly about-to-be created variable 'myprod'
+>>> myprod = Product(product_name="Mouse",category="computer",subcategory="devices",desc="It is a input device",pub_date=timezone.now(),price=12)
+
+# Saving the created variable 'myprod'
+>>> myprod.save()
+
+# Accessing the created variable's fields by variable names
+>>> myprod.product_name
+'Mouse'
+
+>>> myprod.category
+'computer'
+
+# Printing all objects present within the DB
+>>> Product.objects.all()
+<QuerySet [<Product: watch>, <Product: ghadi>, <Product: third Object>, <Product: tissot>, <Product: Mouse>]>
+
+# Fetching an object based on its product name
+>>> Product.objects.get(product_name = "Mouse")
+<Product: Mouse>
+
+# Storing fetched product name in a variable and then displaying the category of the object by using the variable which stored it(which stored 'get')
+>>> a = Product.objects.get(product_name = "Mouse")
+>>> a.category
+'computer'
+
+Templates of Django use DRY principle..i.e DO NOT REPEAT YOURSELF PRINCIPLE
+
+------------------------------------------------ CODES REMOVED AFTER CODE CLEANING -----------------------------------------------------------
+42-47 Lines of 'basic.html'
+
+         <!-- Created to display Cart Elements -->
+         <!--  <li class="nav-item">
+            <a class="nav-link" href="#">Cart(<span id="cart">0</span>)</a>
+          </li>  -->
+
+After Parsing using JSON the following line as used to add up items in the cart when 'cart' was in <span> tag in navbar
+  // Used to display the no of items in cart when <span> tag was used in navbar.
+  // document.getElementById('cart').innerHTML = Object.keys(cart).length;
+
+The current $('.divpr').on('click') function was initially: $('.cart').click(function() when cart was in navbar
+
+This was used in 'if' block of cart existence: (Lines:169-170 of index.html)
+    // cart[idstr] = [qty,name];            // Optional
+    // cart[idstr] = cart[idstr] + 1;
+
+After the End of 'else' this was added :   cart[idstr] = 1; (line:179 of index.html)
+
+Initial popover text of 'index.html':
+// document.getElementById('popcart').setAttribute('data-content','<h5> Cart </h5>');         // For displaying 'Cart' in 'popover when clicked on the Button
+
+
+SEQUENCE:
+
+HOME PAGE:
+How the Index.html file i.e first page is loaded
+-->
+In 'settings.py' file within DIRS we add 'mac/templates' to specify the location of html file that would display the contents
+We specify the url of the file(index.html) within urls.py file of 'mac' folder.
+In 'views.py' file the function is defined which redirects it to original file i.e 'index.html' where the content is present.
+
+Flow:
+urls.py --> views.py --> index.html
